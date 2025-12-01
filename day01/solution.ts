@@ -10,16 +10,10 @@ function countPassings(
   let zero = 0;
   let position = start;
 
-  for (let i = 0; i < clicks; i++) {
-    if (direction === "R") {
-      position = modulo(position + 1, 100);
-    } else {
-      position = modulo(position - 1, 100);
-    }
-
-    if (position === 0) {
-      zero++;
-    }
+  for (const _ of Array(clicks)) {
+    position =
+      direction === "R" ? modulo(position + 1, 100) : modulo(position - 1, 100);
+    position === 0 && zero++;
   }
 
   return zero;
@@ -32,17 +26,10 @@ function part1(lines: string[]): number {
   for (const line of lines) {
     const direction = line[0];
     const clicks = extractNumbers(line)[0];
-
-    if (direction === "L") {
-      current = modulo(current - clicks, 100);
-    } else {
-      current = modulo(current + clicks, 100);
-    }
-
-    if (current === 0) {
-      zero++;
-    }
+    current = modulo(current + (direction === "R" ? clicks : -clicks), 100);
+    current === 0 && zero++;
   }
+
   return zero;
 }
 
@@ -53,8 +40,7 @@ function part2(lines: string[]): number {
   for (const line of lines) {
     const direction = line[0];
     const clicks = extractNumbers(line)[0];
-    const passes = countPassings(current, direction, clicks);
-    zero += passes;
+    zero += countPassings(current, direction, clicks);
     current = modulo(current + (direction === "R" ? clicks : -clicks), 100);
   }
 
