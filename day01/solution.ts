@@ -7,13 +7,12 @@ function countPassings(
   direction: string,
   clicks: number
 ): number {
+  let current = start;
   let zero = 0;
-  let position = start;
 
   for (const _ of Array(clicks)) {
-    position =
-      direction === "R" ? modulo(position + 1, 100) : modulo(position - 1, 100);
-    position === 0 && zero++;
+    current = modulo(current + (direction === "R" ? 1 : -1), 100);
+    current === 0 && zero++;
   }
 
   return zero;
