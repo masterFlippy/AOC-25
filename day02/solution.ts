@@ -35,32 +35,29 @@ function isInvalidId2(number: number): boolean {
   return false;
 }
 
-function part1(input: string): number {
-  const rangeStrings = splitByDelimiter(input);
-  const ranges = rangeStrings.map(parseRange);
-  const invalid: number[] = ranges.flatMap((range) =>
+function findInvalidIds(validate: (number: number) => boolean): number[] {
+  return ranges.flatMap((range) =>
     Array.from(
       { length: range.end - range.start + 1 },
       (_, i) => range.start + i
-    ).filter(isInvalidId)
+    ).filter(validate)
   );
-
-  return invalid.reduce((accumulator, value) => accumulator + value, 0);
 }
 
-function part2(input: string): number {
-  const rangeStrings = splitByDelimiter(input);
-  const ranges = rangeStrings.map(parseRange);
-  const invalid: number[] = ranges.flatMap((range) =>
-    Array.from(
-      { length: range.end - range.start + 1 },
-      (_, i) => range.start + i
-    ).filter(isInvalidId2)
+function part1(): number {
+  return findInvalidIds(isInvalidId).reduce(
+    (accumulator, value) => accumulator + value,
+    0
   );
-
-  return invalid.reduce((accumulator, value) => accumulator + value, 0);
 }
 
-const input = readInput(2);
-console.log("Part 1:", part1(input));
-console.log("Part 2:", part2(input));
+function part2(): number {
+  return findInvalidIds(isInvalidId2).reduce(
+    (accumulator, value) => accumulator + value,
+    0
+  );
+}
+
+const ranges = splitByDelimiter(readInput(2)).map(parseRange);
+console.log("Part 1:", part1());
+console.log("Part 2:", part2());
