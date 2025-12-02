@@ -18,3 +18,19 @@ export function parseNumbers(
 ): number[] {
   return string.split(delimiter).map((s) => parseFloat(s.trim()));
 }
+
+export function splitByDelimiter(
+  string: string,
+  delimiter: string = ","
+): string[] {
+  return string.split(delimiter).map((s) => s.trim());
+}
+
+export function parseRange(range: string): { start: number; end: number } {
+  const [start, end] = range.trim().split("-").map(Number);
+  return { start, end };
+}
+
+export function isRepeatedPattern(string: string, length: number): boolean {
+  return string.substring(0, length).repeat(string.length / length) === string;
+}
