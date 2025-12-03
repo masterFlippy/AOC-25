@@ -29,11 +29,9 @@ function getJoltage2(bank: number[]): number {
 }
 
 function calculateJoltage(joltageFunction: (bank: number[]) => number): number {
-  const joltages: number[] = [];
-  for (const bank of banks) {
-    joltages.push(joltageFunction(bank));
-  }
-  return joltages.reduce((accumulator, value) => accumulator + value, 0);
+  return banks
+    .map(joltageFunction)
+    .reduce((accumulator, value) => accumulator + value, 0);
 }
 
 function part1(): number {
