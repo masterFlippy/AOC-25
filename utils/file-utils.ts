@@ -18,7 +18,16 @@ export function readNumbers(
   day: number,
   filename: string = "input.txt"
 ): number[] {
-  return readLines(day, filename).map((line) => parseInt(line, 10));
+  return readLines(day, filename).map((line) => Number(line));
+}
+
+export function readDigits(
+  day: number,
+  filename: string = "input.txt"
+): number[][] {
+  return readLines(day, filename).map((line) =>
+    line.split("").map((digit) => Number(digit))
+  );
 }
 
 export function readGroups(
