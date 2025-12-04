@@ -21,3 +21,13 @@ export function chunk<T>(array: T[], size: number): T[][] {
 export function unique<T>(array: T[]): T[] {
   return [...new Set(array)];
 }
+
+export function isInBounds<T>(
+  grid: T[][],
+  row: number,
+  column: number
+): boolean {
+  return (
+    row >= 0 && row < grid.length && column >= 0 && column < grid[0].length
+  );
+}
