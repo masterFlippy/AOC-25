@@ -1,17 +1,24 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-export function readInput(day: number, filename: string = "input.txt"): string {
+export function readInput(
+  day: number,
+  filename: string = "input.txt",
+  shouldTrim: boolean = true
+): string {
   const dayFolder = `day${day.toString().padStart(2, "0")}`;
   const filePath = join(process.cwd(), dayFolder, filename);
-  return readFileSync(filePath, "utf-8").trim();
+  return shouldTrim
+    ? readFileSync(filePath, "utf-8").trim()
+    : readFileSync(filePath, "utf-8");
 }
 
 export function readLines(
   day: number,
-  filename: string = "input.txt"
+  filename: string = "input.txt",
+  shouldTrim: boolean = true
 ): string[] {
-  return readInput(day, filename).split("\n");
+  return readInput(day, filename, shouldTrim).split("\n");
 }
 
 export function readNumbers(
