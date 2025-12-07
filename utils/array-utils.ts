@@ -2,6 +2,16 @@ interface Range {
   start: number;
   end: number;
 }
+
+export interface Position {
+  row: number;
+  column: number;
+}
+
+export interface GridCell<T> extends Position {
+  cell: T;
+}
+
 export function sum(array: number[]): number {
   return array.reduce((acc, val) => acc + val, 0);
 }
@@ -66,4 +76,41 @@ export function mergeOverlappingRanges(ranges: Range[]): Range[] {
   }
 
   return merged;
+}
+
+export function findPosition<T>(grid: T[][], target: T): Position | null {
+  for (const [row, gridRow] of grid.entries()) {
+    for (const [column, cell] of gridRow.entries()) {
+      if (cell === target) {
+        return { row, column };
+      }
+    }
+  }
+  return null;
+}
+
+export function getAdjacentPositions<T>(
+  row: number,
+  column: number,
+  grid: T[][],
+  directions: Array<[number, number]> = [
+    [0, 1], // right
+    [0, -1], // left
+    [1, 0], // down
+    [-1, 0], // up
+  ]
+): GridCell<T>[] {
+  return directions
+    .map(([rowOffset, columnOffset]) => ({
+      row: row + rowOffset,
+      column: column + columnOffset,
+    }))
+    .filter(({ row: newRow, column: newColumn }) =>
+      isInBounds(grid, newRow, newColumn)
+    )
+    .map(({ row: newRow, column: newColumn }) => ({
+      row: newRow,
+      column: newColumn,
+      cell: grid[newRow][newColumn],
+    }));
 }
