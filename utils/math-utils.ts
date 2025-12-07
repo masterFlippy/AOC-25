@@ -1,3 +1,5 @@
+import { sum } from "./array-utils";
+
 export function modulo(number: number, modulus: number): number {
   return ((number % modulus) + modulus) % modulus;
 }
@@ -67,9 +69,8 @@ export function countMemo<T>(
     return 1;
   }
 
-  const total = neighbors.reduce(
-    (sum, neighbor) => sum + countMemo(neighbor, getNeighbors, getKey, memo),
-    0
+  const total = sum(
+    neighbors.map((neighbor) => countMemo(neighbor, getNeighbors, getKey, memo))
   );
 
   memo.set(key, total);
