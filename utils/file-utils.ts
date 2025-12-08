@@ -1,5 +1,12 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import { parseNumbers } from "./string-utils";
+
+export interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}
 
 export function readInput(
   day: number,
@@ -50,4 +57,14 @@ export function readGrid(
   filename: string = "input.txt"
 ): string[][] {
   return readLines(day, filename).map((line) => line.split(""));
+}
+
+export function read3dCoordinates(
+  day: number,
+  filename: string = "input.txt"
+): Point3D[] {
+  return readLines(day, filename).map((line) => {
+    const [x, y, z] = parseNumbers(line, ",");
+    return { x, y, z };
+  });
 }

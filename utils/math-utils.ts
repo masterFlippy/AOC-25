@@ -1,4 +1,14 @@
 import { sum } from "./array-utils";
+import { Point3D } from "./file-utils";
+
+export function distance3d(a: Point3D, b: Point3D): number {
+  const distanceX = b.x - a.x;
+  const distanceY = b.y - a.y;
+  const distanceZ = b.z - a.z;
+  return Math.sqrt(
+    distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ
+  );
+}
 
 export function modulo(number: number, modulus: number): number {
   return ((number % modulus) + modulus) % modulus;
@@ -75,4 +85,41 @@ export function countMemo<T>(
 
   memo.set(key, total);
   return total;
+}
+
+export interface UnionFind {
+  find: (x: number) => number;
+  union: (a: number, b: number) => boolean;
+}
+
+export function createUnionFind(n: number): UnionFind {
+  const parent = Array.from({ length: n }, (_, i) => i);
+  const size = Array(n).fill(1);
+
+  const find = (x: number): number => {
+    if (parent[x] !== x) {
+      parent[x] = find(parent[x]);
+    }
+    return parent[x];
+  };
+
+  const union = (a: number, b: number): boolean => {
+    let rootA = find(a);
+    let rootB = find(b);
+
+    if (rootA === rootB) {
+      return false;
+    }
+
+    if (size[rootA] < size[rootB]) {
+      [rootA, rootB] = [rootB, rootA];
+    }
+
+    parent[rootB] = rootA;
+    size[rootA] += size[rootB];
+
+    return true;
+  };
+
+  return { find, union };
 }
