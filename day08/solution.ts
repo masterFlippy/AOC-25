@@ -114,7 +114,7 @@ function part2(): number {
   );
 }
 
-const junctionBoxCoordinates = read3dCoordinates(8, "input.txt");
+const junctionBoxCoordinates = read3dCoordinates(8);
 const sortedPairs = buildPairs();
 
 console.time("Part 1");
