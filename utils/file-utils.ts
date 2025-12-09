@@ -8,6 +8,11 @@ export interface Point3D {
   z: number;
 }
 
+export interface Point2D {
+  x: number;
+  y: number;
+}
+
 export function readInput(
   day: number,
   filename: string = "input.txt",
@@ -64,7 +69,17 @@ export function read3dCoordinates(
   filename: string = "input.txt"
 ): Point3D[] {
   return readLines(day, filename).map((line) => {
-    const [x, y, z] = parseNumbers(line, ",");
+    const [x, y, z] = parseNumbers(line);
     return { x, y, z };
+  });
+}
+
+export function read2dCoordinates(
+  day: number,
+  filename: string = "input.txt"
+): Point2D[] {
+  return readLines(day, filename).map((line) => {
+    const [x, y] = parseNumbers(line);
+    return { x, y };
   });
 }
