@@ -1,5 +1,17 @@
-import { sum } from "./array-utils";
-import { Point3D } from "./file-utils";
+import {
+  createGrid,
+  getAdjacentPositions,
+  isInBounds,
+  max,
+  min,
+  sum,
+} from "./array-utils";
+import { Point2D, Point3D } from "./file-utils";
+
+export interface UnionFind {
+  find: (x: number) => number;
+  union: (a: number, b: number) => boolean;
+}
 
 export function distance3d(a: Point3D, b: Point3D): number {
   const distanceX = b.x - a.x;
@@ -87,11 +99,6 @@ export function countMemo<T>(
   return total;
 }
 
-export interface UnionFind {
-  find: (x: number) => number;
-  union: (a: number, b: number) => boolean;
-}
-
 export function createUnionFind(n: number): UnionFind {
   const parent = Array.from({ length: n }, (_, i) => i);
   const size = Array(n).fill(1);
@@ -122,4 +129,117 @@ export function createUnionFind(n: number): UnionFind {
   };
 
   return { find, union };
+}
+
+export function isPointInPolygon(point: Point2D, polygon: Point2D[]): boolean {
+  let inside = false;
+  for (
+    let currentIndex = 0, previousIndex = polygon.length - 1;
+    currentIndex < polygon.length;
+    previousIndex = currentIndex++
+  ) {
+    const current = polygon[currentIndex];
+    const previous = polygon[previousIndex];
+
+    if (current.y > point.y !== previous.y > point.y) {
+      const intersectX =
+        ((previous.x - current.x) * (point.y - current.y)) /
+          (previous.y - current.y) +
+        current.x;
+      if (point.x < intersectX) {
+        inside = !inside;
+      }
+    }
+  }
+  return inside;
+}
+
+export function floodFill(
+  grid: boolean[][],
+  startPoints: [number, number][],
+  fillValue: boolean = true
+): boolean[][] {
+  const rows = grid.length;
+  const columns = grid[0].length;
+  const result = createGrid(rows, columns, false);
+  const queue: [number, number][] = [...startPoints];
+
+  for (const [row, column] of startPoints) {
+    if (isInBounds(grid, row, column) && !grid[row][column]) {
+      result[row][column] = fillValue;
+    }
+  }
+
+  while (queue.length > 0) {
+    const [row, column] = queue.shift()!;
+    const neighbors = getAdjacentPositions(row, column, grid);
+
+    for (const { row: newRow, column: newColumn } of neighbors) {
+      if (!result[newRow][newColumn] && !grid[newRow][newColumn]) {
+        result[newRow][newColumn] = fillValue;
+        queue.push([newRow, newColumn]);
+      }
+    }
+  }
+
+  return result;
+}
+
+export function calculateRectangleArea(
+  corner1: Point2D,
+  corner2: Point2D
+): number {
+  const width = Math.abs(corner2.x - corner1.x) + 1;
+  const height = Math.abs(corner2.y - corner1.y) + 1;
+  return width * height;
+}
+
+export function buildPolygonEdges(coordinates: Point2D[]): Set<string> {
+  const coordinateSet = new Set(
+    coordinates.map((coordinate) => `${coordinate.x},${coordinate.y}`)
+  );
+
+  for (let i = 0; i < coordinates.length; i++) {
+    const current = coordinates[i];
+    const next = coordinates[(i + 1) % coordinates.length];
+
+    const [start, end, isVertical] =
+      current.x === next.x
+        ? [min([current.y, next.y]), max([current.y, next.y]), true]
+        : [min([current.x, next.x]), max([current.x, next.x]), false];
+
+    for (let coordinate = start; coordinate <= end; coordinate++) {
+      coordinateSet.add(
+        isVertical ? `${current.x},${coordinate}` : `${coordinate},${current.y}`
+      );
+    }
+  }
+
+  return coordinateSet;
+}
+
+export function createPolygonGrid(
+  coordinates: Point2D[],
+  xCoordinates: number[],
+  yCoordinates: number[]
+): boolean[][] {
+  const rows = yCoordinates.length;
+  const columns = xCoordinates.length;
+  const grid = createGrid(rows, columns, false);
+  const coordinateSet = buildPolygonEdges(coordinates);
+
+  for (let row = 0; row < rows; row++) {
+    for (let column = 0; column < columns; column++) {
+      const x = xCoordinates[column];
+      const y = yCoordinates[row];
+      if (
+        coordinateSet.has(`${x},${y}`) ||
+        isPointInPolygon({ x, y }, coordinates)
+      ) {
+        grid[row][column] = true;
+      }
+    }
+  }
+
+  return grid;
 }

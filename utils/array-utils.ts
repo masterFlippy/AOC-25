@@ -1,3 +1,5 @@
+import { Point2D } from "./file-utils";
+
 interface Range {
   start: number;
   end: number;
@@ -113,4 +115,63 @@ export function getAdjacentPositions<T>(
       column: newColumn,
       cell: grid[newRow][newColumn],
     }));
+}
+
+export function createGrid<T>(
+  rows: number,
+  columns: number,
+  defaultValue: T
+): T[][] {
+  return Array(rows)
+    .fill(0)
+    .map(() => Array(columns).fill(defaultValue));
+}
+
+export function getEdgePoints<T>(
+  grid: T[][],
+  predicate: (value: T) => boolean
+): [number, number][] {
+  const rows = grid.length;
+  const columns = grid[0].length;
+
+  return Array.from({ length: rows }, (_, row) =>
+    Array.from(
+      { length: columns },
+      (_, column) => [row, column] as [number, number]
+    )
+  ).flatMap((rowPoints) =>
+    rowPoints.filter(
+      ([row, column]) =>
+        (row === 0 ||
+          row === rows - 1 ||
+          column === 0 ||
+          column === columns - 1) &&
+        predicate(grid[row][column])
+    )
+  );
+}
+
+export function intersectsGrid<T>(
+  grid: T[][],
+  minRow: number,
+  maxRow: number,
+  minColumn: number,
+  maxColumn: number,
+  predicate: (value: T) => boolean
+): boolean {
+  for (let row = minRow; row <= maxRow; row++) {
+    for (let column = minColumn; column <= maxColumn; column++) {
+      if (predicate(grid[row][column])) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function compressCoordinates(
+  items: Point2D[],
+  selector: (item: Point2D) => number
+): number[] {
+  return [...new Set(items.map(selector))].sort((a, b) => a - b);
 }
