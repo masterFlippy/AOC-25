@@ -83,3 +83,15 @@ export function read2dCoordinates(
     return { x, y };
   });
 }
+
+export function readDeviceMappings(
+  day: number,
+  filename: string = "input.txt"
+): Record<string, string[]> {
+  return Object.fromEntries(
+    readLines(day, filename).map((line) => {
+      const [device, outputs] = line.split(":");
+      return [device.trim(), outputs.trim().split(/\s+/).filter(Boolean)];
+    })
+  );
+}

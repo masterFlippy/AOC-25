@@ -40,6 +40,40 @@ export function applyOperator(a: number, b: number, operator: string): number {
   }
 }
 
+export function dfsPaths<T>(
+  start: T,
+  getNeighbors: (state: T) => T[],
+  getKey: (state: T) => string,
+  isGoal: (state: T) => boolean,
+  onPath: (path: T[]) => void
+): void {
+  const path: T[] = [];
+  const visiting = new Set<string>();
+
+  function visit(node: T) {
+    const key = getKey(node);
+    if (visiting.has(key)) {
+      return;
+    }
+
+    path.push(node);
+    visiting.add(key);
+
+    if (isGoal(node)) {
+      onPath([...path]);
+    } else {
+      for (const neighbor of getNeighbors(node)) {
+        visit(neighbor);
+      }
+    }
+
+    visiting.delete(key);
+    path.pop();
+  }
+
+  visit(start);
+}
+
 export function bfs<T>(
   initialState: T,
   getNeighbors: (state: T) => T[],
